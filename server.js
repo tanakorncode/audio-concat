@@ -28,49 +28,49 @@ if (isDevMode) {
 const p1 = path.join(__dirname, "public", "media", "Prompt1", "mp3").replace(/\\/g, "/")
 const p2 = path.join(__dirname, "public", "media", "Prompt2", "mp3").replace(/\\/g, "/")
 
-const audioQueue = new Queue("audio transcoding", { redis: redisConfig }) // Specify Redis connection using objectconcat
+// const audioQueue = new Queue("audio transcoding", { redis: redisConfig }) // Specify Redis connection using objectconcat
 
-audioQueue.process(function (job, done) {
-	console.log("[audioQueue] process")
-	try {
-		// var songs = [
-		// 	`${p1}/Prompt1_A.mp3`,
-		// 	`${p1}/Prompt1_0.mp3`,
-		// 	`${p1}/Prompt1_0.mp3`,
-		// 	`${p1}/Prompt1_1.mp3`,
-		// 	`${p1}/Prompt1_Service2.mp3`,
-		// 	`${p1}/Prompt1_1.mp3`,
-		// 	`${p1}/Prompt1_Sir.mp3`,
-		// ]
+// audioQueue.process(function (job, done) {
+// 	console.log("[audioQueue] process")
+// 	try {
+// 		// var songs = [
+// 		// 	`${p1}/Prompt1_A.mp3`,
+// 		// 	`${p1}/Prompt1_0.mp3`,
+// 		// 	`${p1}/Prompt1_0.mp3`,
+// 		// 	`${p1}/Prompt1_1.mp3`,
+// 		// 	`${p1}/Prompt1_Service2.mp3`,
+// 		// 	`${p1}/Prompt1_1.mp3`,
+// 		// 	`${p1}/Prompt1_Sir.mp3`,
+// 		// ]
 
-		audioconcat(job.data.songs)
-			.concat(path.join(__dirname, "public", "files", job.data.output))
-			.on("start", function (command) {
-				console.log("ffmpeg process started:", command)
-			})
-			.on("error", function (err, stdout, stderr) {
-				console.error("Error:", err)
-				console.error("ffmpeg stderr:", stderr)
-				done(err)
-			})
-			.on("end", function (output) {
-				console.error("Audio created in:", output)
-				job.progress(100)
-				done()
-			})
-	} catch (error) {
-		console.log(error)
-		done(error)
-	}
-})
+// 		audioconcat(job.data.songs)
+// 			.concat(path.join(__dirname, "public", "files", job.data.output))
+// 			.on("start", function (command) {
+// 				console.log("ffmpeg process started:", command)
+// 			})
+// 			.on("error", function (err, stdout, stderr) {
+// 				console.error("Error:", err)
+// 				console.error("ffmpeg stderr:", stderr)
+// 				done(err)
+// 			})
+// 			.on("end", function (output) {
+// 				console.error("Audio created in:", output)
+// 				job.progress(100)
+// 				done()
+// 			})
+// 	} catch (error) {
+// 		console.log(error)
+// 		done(error)
+// 	}
+// })
 
-audioQueue.on("error", function (error) {
-	console.log(`Job error: ${error}`)
-})
+// audioQueue.on("error", function (error) {
+// 	console.log(`Job error: ${error}`)
+// })
 
-audioQueue.on("completed", (job, result) => {
-	console.log(`Job completed with result ${result}`)
-})
+// audioQueue.on("completed", (job, result) => {
+// 	console.log(`Job completed with result ${result}`)
+// })
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
