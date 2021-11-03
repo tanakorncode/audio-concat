@@ -6,7 +6,7 @@ const app = express()
 const path = require("path")
 const Promise = require("bluebird")
 const bodyParser = require("body-parser")
-const port = 8080
+const port = 8088
 const isDevMode = process.env.NODE_ENV === "development"
 const glob = Promise.promisifyAll(require("glob"))
 const fs = require("fs")
