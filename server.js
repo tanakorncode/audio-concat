@@ -25,8 +25,17 @@ if (isDevMode) {
 }
 
 // files path
-const p1 = path.join(__dirname, "public", "media", "Prompt1", "mp3").replace(/\\/g, "/")
-const p2 = path.join(__dirname, "public", "media", "Prompt2", "mp3").replace(/\\/g, "/")
+let p1 = path.join(__dirname, "public", "media", "Prompt1", "mp3").replace(/\\/g, "/")
+let p2 = path.join(__dirname, "public", "media", "Prompt2", "mp3").replace(/\\/g, "/")
+
+if (!isDevMode) {
+	p1 = path
+		.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "Prompt1", "mp3")
+		.replace(/\\/g, "/")
+	p2 = path
+		.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "Prompt2", "mp3")
+		.replace(/\\/g, "/")
+}
 
 // const audioQueue = new Queue("audio transcoding", { redis: redisConfig }) // Specify Redis connection using objectconcat
 
