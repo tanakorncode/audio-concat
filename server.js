@@ -84,10 +84,15 @@ app.get("/", (req, res) => {
 	res.send("Hello World!")
 })
 
+app.get("/audio", (req, res) => {
+	res.sendFile(path.join(__dirname, "public", req.query.path))
+})
+
 app.post("/concat-audio", async function (req, res, next) {
 	try {
 		let { prompt, text, service, counter } = req.body
 		let songs = []
+		let baseUrl = process.env.BASE_URL_AUDIO
 
 		const chars = String(text).replace(/\s/g, "").split("")
 
@@ -97,7 +102,7 @@ app.post("/concat-audio", async function (req, res, next) {
 			songs = songs.concat(chars.map((c) => `${p1}/Prompt1_${c}.mp3`))
 			songs.push(`${p1}/Prompt1_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
 			songs.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
-			// songs.push(`${p1}/Prompt1_Sir.mp3`)
+			songs.push(`${p1}/Prompt1_Sir.mp3`)
 		}
 		if (prompt === "Prompt2") {
 			service = String(service).replace("Prompt2_", "").replace("_", "").replace(".wav", "").replace(".mp3", "")
@@ -105,7 +110,7 @@ app.post("/concat-audio", async function (req, res, next) {
 			songs = songs.concat(chars.map((c) => `${p2}/Prompt2_${c}.mp3`))
 			songs.push(`${p2}/Prompt2_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
 			songs.push(`${p2}/Prompt2_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
-			// songs.push(`${p2}/Prompt2_Sir.mp3`)
+			songs.push(`${p2}/Prompt2_Sir.mp3`)
 		}
 		for (let i = 0; i < songs.length; i++) {
 			const song = songs[i]
@@ -126,10 +131,22 @@ app.post("/concat-audio", async function (req, res, next) {
 				})
 				.on("end", function (data) {
 					console.error("Audio created in:", data)
-					res.json({ message: "ok", output: output, path: `/source/files/${output}`, songs: songs })
+					res.json({
+						message: "ok",
+						output: output,
+						path: `/files/${output}`,
+						url: `${baseUrl}/files/${output}`,
+						songs: songs,
+					})
 				})
 		} else {
-			res.json({ message: "ok", output: output, path: `/source/files/${output}`, songs: songs })
+			res.json({
+				message: "ok",
+				output: output,
+				path: `/files/${output}`,
+				url: `${baseUrl}/files/${output}`,
+				songs: songs,
+			})
 		}
 	} catch (error) {
 		console.log(res.statusMessage)
