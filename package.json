@@ -1,0 +1,22 @@
+{
+  "name": "concat-audio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "audioconcat": "^0.1.4",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
+    "bull": "^4.1.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "glob": "^7.2.0"
+  }
+}
