@@ -99,7 +99,7 @@ app.get("/audio", (req, res) => {
 
 app.post("/concat-audio", async function (req, res, next) {
 	try {
-		let { prompt, text, service, counter } = req.body
+		let { prompt, text, service, counter, playCounter } = req.body
 		let songs = []
 		let baseUrl = process.env.BASE_URL_AUDIO
 
@@ -110,15 +110,19 @@ app.post("/concat-audio", async function (req, res, next) {
 			songs.push(`${p1}/Prompt1_Please.mp3`) // เชิญหมายเลข
 			songs = songs.concat(chars.map((c) => `${p1}/Prompt1_${c}.mp3`))
 			songs.push(`${p1}/Prompt1_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
-			songs.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+			if (playCounter === "1") {
+				songs.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+			}
 			songs.push(`${p1}/Prompt1_Sir.mp3`)
 		}
 		if (prompt === "Prompt2") {
 			service = String(service).replace("Prompt2_", "").replace("_", "").replace(".wav", "").replace(".mp3", "")
-			// songs.push(`${p2}/Prompt2_Please.mp3`) // เชิญหมายเลข
+			songs.push(`${p2}/Prompt2_Please.mp3`) // เชิญหมายเลข
 			songs = songs.concat(chars.map((c) => `${p2}/Prompt2_${c}.mp3`))
 			songs.push(`${p2}/Prompt2_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
-			songs.push(`${p2}/Prompt2_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+			if (playCounter === "1") {
+				songs.push(`${p2}/Prompt2_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+			}
 			songs.push(`${p2}/Prompt2_Sir.mp3`)
 		}
 		for (let i = 0; i < songs.length; i++) {
@@ -127,10 +131,16 @@ app.post("/concat-audio", async function (req, res, next) {
 				throw new Error("File not found.")
 			}
 		}
-		const output = `${text}-${service}-${counter}.mp3`
+
+		let output = `please-${text}-${String(service).toLowerCase()}-${counter}-sir.mp3`
+    if (playCounter === "1") {
+      output = `please-${text}-${String(service).toLowerCase()}-sir.mp3`
+    }
 		// const files = await glob.globAsync("./public/media/**/*.mp3")
 		// const result = await audioQueue.add({ songs: songs, output: output })
-		if (!fs.existsSync(path.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output))) {
+		if (
+			!fs.existsSync(path.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output))
+		) {
 			audioconcat(songs)
 				.concat(path.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output))
 				.on("error", function (err, stdout, stderr) {
