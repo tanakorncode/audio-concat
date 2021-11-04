@@ -130,9 +130,9 @@ app.post("/concat-audio", async function (req, res, next) {
 		const output = `${text}-${service}-${counter}.mp3`
 		// const files = await glob.globAsync("./public/media/**/*.mp3")
 		// const result = await audioQueue.add({ songs: songs, output: output })
-		if (!fs.existsSync(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output)) {
+		if (!fs.existsSync(path.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output))) {
 			audioconcat(songs)
-				.concat(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output)
+				.concat(path.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output))
 				.on("error", function (err, stdout, stderr) {
 					console.error("Error:", err)
 					console.error("ffmpeg stderr:", stderr)
