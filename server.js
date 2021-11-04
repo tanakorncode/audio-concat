@@ -132,7 +132,7 @@ app.post("/concat-audio", async function (req, res, next) {
 		// const result = await audioQueue.add({ songs: songs, output: output })
 		if (!fs.existsSync(path.join(__dirname, "public", "files", output))) {
 			audioconcat(songs)
-				.concat(path.join(__dirname, "public", "files", output))
+				.concat(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output)
 				.on("error", function (err, stdout, stderr) {
 					console.error("Error:", err)
 					console.error("ffmpeg stderr:", stderr)
