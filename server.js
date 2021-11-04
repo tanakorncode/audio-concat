@@ -107,7 +107,7 @@ app.post("/concat-audio", async function (req, res, next) {
 
 		if (prompt === "Prompt1") {
 			service = String(service).replace("Prompt1_", "").replace("_", "").replace(".wav", "").replace(".mp3", "")
-			// songs.push(`${p1}/Prompt1_Please.mp3`) // เชิญหมายเลข
+			songs.push(`${p1}/Prompt1_Please.mp3`) // เชิญหมายเลข
 			songs = songs.concat(chars.map((c) => `${p1}/Prompt1_${c}.mp3`))
 			songs.push(`${p1}/Prompt1_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
 			songs.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
