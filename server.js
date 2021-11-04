@@ -100,71 +100,135 @@ app.get("/audio", (req, res) => {
 app.post("/concat-audio", async function (req, res, next) {
 	try {
 		let { prompt, text, service, counter, playCounter } = req.body
-		let songs = []
+		let songs1 = []
+		let songs2 = []
 		let baseUrl = process.env.BASE_URL_AUDIO
 
 		const chars = String(text).replace(/\s/g, "").split("")
 
 		if (prompt === "Prompt1") {
 			service = String(service).replace("Prompt1_", "").replace("_", "").replace(".wav", "").replace(".mp3", "")
-			songs.push(`${p1}/Prompt1_Please.mp3`) // เชิญหมายเลข
-			songs = songs.concat(chars.map((c) => `${p1}/Prompt1_${c}.mp3`))
-			songs.push(`${p1}/Prompt1_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
-			if (playCounter === "1") {
-				songs.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
-			}
-			songs.push(`${p1}/Prompt1_Sir.mp3`)
+			songs1.push(`${p1}/Prompt1_Please.mp3`) // เชิญหมายเลข
+			songs1 = songs1.concat(chars.map((c) => `${p1}/Prompt1_${c}.mp3`))
+			songs1.push(`${p1}/Prompt1_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
+			songs1.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+			songs1.push(`${p1}/Prompt1_Sir.mp3`)
+
+			songs2.push(`${p1}/Prompt1_Please.mp3`) // เชิญหมายเลข
+			songs2 = songs2.concat(chars.map((c) => `${p1}/Prompt1_${c}.mp3`))
+			songs2.push(`${p1}/Prompt1_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
+			// songs2.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+			songs2.push(`${p1}/Prompt1_Sir.mp3`)
 		}
 		if (prompt === "Prompt2") {
 			service = String(service).replace("Prompt2_", "").replace("_", "").replace(".wav", "").replace(".mp3", "")
-			songs.push(`${p2}/Prompt2_Please.mp3`) // เชิญหมายเลข
-			songs = songs.concat(chars.map((c) => `${p2}/Prompt2_${c}.mp3`))
-			songs.push(`${p2}/Prompt2_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
-			if (playCounter === "1") {
-				songs.push(`${p2}/Prompt2_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
-			}
-			songs.push(`${p2}/Prompt2_Sir.mp3`)
+			songs1.push(`${p2}/Prompt2_Please.mp3`) // เชิญหมายเลข
+			songs1 = songs1.concat(chars.map((c) => `${p2}/Prompt2_${c}.mp3`))
+			songs1.push(`${p2}/Prompt2_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
+			songs1.push(`${p2}/Prompt2_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+			songs1.push(`${p2}/Prompt2_Sir.mp3`)
+
+			songs2.push(`${p2}/Prompt2_Please.mp3`) // เชิญหมายเลข
+			songs2 = songs2.concat(chars.map((c) => `${p2}/Prompt2_${c}.mp3`))
+			songs2.push(`${p2}/Prompt2_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
+			// songs2.push(`${p2}/Prompt2_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+			songs2.push(`${p2}/Prompt2_Sir.mp3`)
 		}
-		for (let i = 0; i < songs.length; i++) {
-			const song = songs[i]
+		for (let i = 0; i < songs1.length; i++) {
+			const song = songs1[i]
+			if (!fs.existsSync(song)) {
+				throw new Error("File not found.")
+			}
+		}
+		for (let i = 0; i < songs2.length; i++) {
+			const song = songs2[i]
 			if (!fs.existsSync(song)) {
 				throw new Error("File not found.")
 			}
 		}
 
-		let output = `please-${text}-${String(service).toLowerCase()}-${counter}-sir.mp3`
-    if (playCounter === "1") {
-      output = `please-${text}-${String(service).toLowerCase()}-sir.mp3`
-    }
+		let output1 = `please-${text}-${String(service).toLowerCase()}-${counter}-sir.mp3`
+		let output2 = `please-${text}-${String(service).toLowerCase()}-sir.mp3`
+		// if (playCounter === "1") {
+		// 	output = `please-${text}-${String(service).toLowerCase()}-sir.mp3`
+		// }
 		// const files = await glob.globAsync("./public/media/**/*.mp3")
 		// const result = await audioQueue.add({ songs: songs, output: output })
-		if (
-			!fs.existsSync(path.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output))
-		) {
-			audioconcat(songs)
-				.concat(path.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "files", output))
-				.on("error", function (err, stdout, stderr) {
-					console.error("Error:", err)
-					console.error("ffmpeg stderr:", stderr)
-					next(err)
-				})
-				.on("end", function (data) {
-					console.error("Audio created in:", data)
-					res.json({
-						message: "ok",
-						output: output,
-						path: `/files/${output}`,
-						url: `${baseUrl}/files/${output}`,
-						songs: songs,
+		const pathOutput1 = path.join(
+			__dirname,
+			"..",
+			"queue-youngdo",
+			"storage",
+			"web",
+			"source",
+			"media",
+			"files",
+			output1
+		)
+		const pathOutput2 = path.join(
+			__dirname,
+			"..",
+			"queue-youngdo",
+			"storage",
+			"web",
+			"source",
+			"media",
+			"files",
+			output2
+		)
+		if (!fs.existsSync(pathOutput1) || !fs.existsSync(pathOutput2)) {
+			const files = await Promise.all([
+				audioconcat(songs1)
+					.concat(pathOutput1)
+					.on("error", function (err, stdout, stderr) {
+						console.error("Error:", err)
+						console.error("ffmpeg stderr:", stderr)
+						// next(err)
+						Promise.reject(err)
 					})
-				})
+					.on("end", function (data) {
+						console.error("Audio created in:", data)
+						Promise.resolve(pathOutput1)
+					}),
+				audioconcat(songs2)
+					.concat(pathOutput2)
+					.on("error", function (err, stdout, stderr) {
+						console.error("Error:", err)
+						console.error("ffmpeg stderr:", stderr)
+						// next(err)
+						Promise.reject(err)
+					})
+					.on("end", function (data) {
+						console.error("Audio created in:", data)
+						Promise.resolve(pathOutput2)
+					}),
+			])
+			res.json({
+				message: "ok",
+				audio: {
+					file1: `${baseUrl}/files/${output1}`,
+					file2: `${baseUrl}/files/${output2}`,
+				},
+				// path: `/files/${output}`,
+				// url: `${baseUrl}/files/${output}`,
+				songs: {
+					songs1: songs1,
+					songs2: songs2,
+				},
+			})
 		} else {
 			res.json({
 				message: "ok",
-				output: output,
-				path: `/files/${output}`,
-				url: `${baseUrl}/files/${output}`,
-				songs: songs,
+				audio: {
+					file1: `${baseUrl}/files/${output1}`,
+					file2: `${baseUrl}/files/${output2}`,
+				},
+				// path: `/files/${output}`,
+				// url: `${baseUrl}/files/${output}`,
+				songs: {
+					songs1: songs1,
+					songs2: songs2,
+				},
 			})
 		}
 	} catch (error) {
