@@ -6,7 +6,8 @@ const app = express()
 const path = require("path")
 const Promise = require("bluebird")
 const bodyParser = require("body-parser")
-const port = 8088
+const port = process.env.PORT || 8088
+const host = process.env.HOST || '0.0.0.0'
 const isDevMode = process.env.NODE_ENV === "development"
 const glob = Promise.promisifyAll(require("glob"))
 const fs = require("fs")
@@ -28,14 +29,14 @@ if (isDevMode) {
 let p1 = path.join(__dirname, "public", "media", "Prompt1", "mp3").replace(/\\/g, "/")
 let p2 = path.join(__dirname, "public", "media", "Prompt2", "mp3").replace(/\\/g, "/")
 
-if (!isDevMode) {
-	p1 = path
-		.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "Prompt1", "mp3")
-		.replace(/\\/g, "/")
-	p2 = path
-		.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "Prompt2", "mp3")
-		.replace(/\\/g, "/")
-}
+// if (!isDevMode) {
+// 	p1 = path
+// 		.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "Prompt1", "mp3")
+// 		.replace(/\\/g, "/")
+// 	p2 = path
+// 		.join(__dirname, "..", "queue-youngdo", "storage", "web", "source", "media", "Prompt2", "mp3")
+// 		.replace(/\\/g, "/")
+// }
 
 // const audioQueue = new Queue("audio transcoding", { redis: redisConfig }) // Specify Redis connection using objectconcat
 
@@ -156,22 +157,14 @@ app.post("/concat-audio", async function (req, res, next) {
 		// const result = await audioQueue.add({ songs: songs, output: output })
 		const pathOutput1 = path.join(
 			__dirname,
-			"..",
-			"queue-youngdo",
-			"storage",
-			"web",
-			"source",
+			"public",
 			"media",
 			"files",
 			output1
 		)
 		const pathOutput2 = path.join(
 			__dirname,
-			"..",
-			"queue-youngdo",
-			"storage",
-			"web",
-			"source",
+			"public",
 			"media",
 			"files",
 			output2
@@ -239,6 +232,6 @@ app.post("/concat-audio", async function (req, res, next) {
 	}
 })
 
-app.listen(port, () => {
-	console.log(`Example app listening at http://localhost:${port}`)
+app.listen(port, host, () => {
+	console.log(`Example app listening at http://${host}:${port}`)
 })
